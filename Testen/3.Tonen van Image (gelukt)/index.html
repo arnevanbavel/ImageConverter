@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="jquery-3.1.1.min.js"></script>
+    <script src="javascript.js"></script>
+    <style type="text/css">
+    	.show{
+		display: inline-block;
+		width: 1px;
+		height: 1px;
+	}
+
+    </style>
+</head>
+<body>
+	<h1>
+  	Test showing in css
+	</h1>
+	    <label>Choose Image:</label>
+	    <input type="file" id="fileinput" />
+
+
+
+	     <div class="show"></div>
+	     <canvas class="canvas"></canvas>
+
+<script type="text/javascript">
+$(function(){ //Document ready function
+
+		pictureobject =  {
+		image: "",
+		show: $('.show'),
+		draw: function(){
+			var img = new Image();									 	//show image in canvas
+	    	img.src = this.image;
+	    	var canvas = $('.canvas')[0];
+	    	var context = canvas.getContext('2d');
+	    	context.drawImage(img, 0, 0);
+
+		}
+	};
+	
+
+
+	// bind controls to converter object
+	$('#fileinput').change(function(evt) {				//drukken upload button
+		var f = evt.target.files[0];					//File list van alle geslecteerde files	+ Pak de eerste file
+		var r = new FileReader();									
+		r.onload = (function(theFile) {	
+			return function(e) {
+				console.log( "Got the file.n" 
+	              +"name: " + f.name + "n"
+	              +"type: " + f.type + "n"
+	              +"size: " + f.size + " bytesn"
+	        	);
+	        	pictureobject.image = e.target.result;		//Omzetten naar base64 en in object plaatsten
+				console.log(pictureobject.image);			//plaatsen van info in console
+				pictureobject.draw();  						//Draw method uitvoeren van Object
+			};
+		})(f);
+	    r.readAsDataURL(f);
+	});
+
+});
+
+</script>
+</body>
+</html>
