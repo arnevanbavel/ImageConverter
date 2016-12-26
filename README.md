@@ -18,4 +18,7 @@
 	Handige link (Omzetten base64): https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
 
 26/12/2016
-	
+	Onderzoek Hoe kleur waardes uit foto te krijgen.
+		https://developer.mozilla.org/en-US/docs/Web/API/ImageData
+		Image data!!!!
+		https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray#Examples
