@@ -25,3 +25,6 @@
 		https://developer.mozilla.org/en-US/docs/Web/API/ImageData
 		Image data!!!!
 		https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray#Examples
+
+27/12/2016
+	Image proberen weertegeven in css (zo basic mogelijk)
