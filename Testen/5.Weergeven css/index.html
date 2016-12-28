@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="jquery-3.1.1.min.js"></script>
+    <script src="javascript.js"></script>
+    
+    <style type="text/css">
+    .show{
+		display: inline-block;
+		width: 1px;
+		height: 1px;
+	}
+
+	.textarea textarea{
+		width: 100%;
+		height: 500px;
+	}
+
+    </style>
+</head>
+<body>
+	<h1>
+  	Test showing in css
+	</h1>
+	    <label>Choose Image:</label>
+	    <input type="file" id="fileinput" />
+
+	    <div class="show"></div>
+	    <canvas class="canvas"></canvas>
+
+	    <div class="textarea">
+	    	<textarea></textarea>
+	    </div>
+
+<script type="text/javascript">
+$(function(){ //Document ready function
+
+		pictureobject =  {
+		image: "",
+		show: $('.show'),
+		draw: function(){
+			var img = new Image();									 	//show image in canvas
+	    	img.src = this.image;
+	    	var canvas = $('.canvas')[0];
+	    	var context = canvas.getContext('2d');
+	    	context.drawImage(img, 0, 0);
+
+	    	var shadow = [];											//array aanmaken voor shadow boxes weer te geven
+	    	for ( var B = 0; B < img.width; B++) {						//breedte van image afgaan
+	    		for ( var H = 0; H < img.height; H++) {					//hoogte van image afgaan
+	    			var data = context.getImageData(B, H, 1, 1).data; 	// 0 x 0 en 1px hoog en 1 px breed geeft array met rgb waarden
+	    				shadow.push( B+'px '+H+'px rgb('+data[0]+','+data[1]+','+data[2]+')' ); //waarden in array pushen
+	    		}
+	    	}	
+	    	
+	    	this.show.css('box-shadow', shadow); 						//add css aan show element
+	    	$('.textarea textarea').val('.show{\n\
+			display: inline-block;\n\
+			width: 1px;\n\
+			height: 1px;\n\
+			box-shadow: '+shadow+';\n\
+			}');
+		}
+	};
+	
+
+
+	// bind controls to converter object
+	$('#fileinput').change(function(evt) {				//drukken upload button
+		var f = evt.target.files[0];					//File list van alle geslecteerde files	+ Pak de eerste file
+		var r = new FileReader();									
+		r.onload = (function(theFile) {	
+			return function(e) {
+				console.log( "Got the file.n" 
+	              +"name: " + f.name + "n"
+	              +"type: " + f.type + "n"
+	              +"size: " + f.size + " bytesn"
+	        	);
+	        	pictureobject.image = e.target.result;		//Omzetten naar base64 en in object plaatsten
+				console.log(pictureobject.image);			//plaatsen van info in console
+				pictureobject.draw();  						//Draw method uitvoeren van Object
+			};
+		})(f);
+	    r.readAsDataURL(f);
+	});
+
+});
+
+</script>
+</body>
+</html>
