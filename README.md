@@ -28,3 +28,6 @@
 
 27/12/2016
 	Image proberen weertegeven in css (zo basic mogelijk)
+
+28/12/2016
+	Weergeven van css
