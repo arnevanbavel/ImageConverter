@@ -31,3 +31,7 @@
 
 28/12/2016
 	Weergeven van css
+
+30/12/2016
+	Webpagina stylen
+	
