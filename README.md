@@ -35,3 +35,11 @@
 30/12/2016
 	Webpagina stylen
 	
+31/12/2016 - 01/01/2017
+	Onderzoek naar het uitbreiden van meer kleursystemen
+
+02/01/2017
+	Uitbreiden kleurestystemen
+	RGB conversie naar:
+	RGBA
+	HEX
