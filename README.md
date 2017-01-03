@@ -43,3 +43,6 @@
 	RGB conversie naar:
 	RGBA
 	HEX
+
+03/01/2017
+	Probleem oplossen met HEX
