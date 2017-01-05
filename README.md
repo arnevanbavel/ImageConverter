@@ -46,3 +46,9 @@
 
 03/01/2017
 	Probleem oplossen met HEX
+
+04/01/2017 & 05/01/2017
+	Toevoegen hsl:
+		Link met formuls: http://www.rapidtables.com/convert/color/rgb-to-hsl.htm
+		https://nl.wikipedia.org/wiki/HSL_(kleurruimte)
+	Toevoegen Invert + gray
