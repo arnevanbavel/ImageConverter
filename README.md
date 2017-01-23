@@ -52,3 +52,21 @@
 		Link met formuls: http://www.rapidtables.com/convert/color/rgb-to-hsl.htm
 		https://nl.wikipedia.org/wiki/HSL_(kleurruimte)
 	Toevoegen Invert + gray
+
+22/01/2017
+	Toevoegen hsv en cmyck
+
+23/01/2017
+	Eind product maken
+	"nog steeds een aantal bugs"
+
+
+EXTRA LINKS:
+https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
+https://developer.mozilla.org/en-US/docs/Web/API/FileReader/onload
+https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
+http://www.w3schools.com/js/js_objects.asp
+https://developer.mozilla.org/nl/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
+http://www.w3schools.com/tags/canvas_drawimage.asp
+https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData
+https://developer.mozilla.org/nl/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="jquery-3.1.1.min.js"></script>
+    
+    <style type="text/css">
+    .show{
+		display: inline-block;
+		width: 1px;
+		height: 1px; 
+	}
+
+	.textarea textarea{
+		width: 100%;
+		height: 500px;
+	}
+
+    </style>
+</head>
+<body>
+
+	<div id="pagewrap">
+
+	<header>
+		<h1>Select a image to convert to css</h1>
+		<h2>Use small images cpu heavy</h2>
+	</header>
+		
+	<section id="content">
+		<label>Choose Image:</label>
+		<input type="file" id="fileinput" /><br>
+		<label>Output:</label>
+	    <select id="output">
+	      	<option value="hex">hex</option>
+   	      	<option value="rgb">rgb</option>
+	      	<option value="rgba">rgba</option>
+	      	<option value="hsl">hsl</option>
+	      	<option value="hsv">hsv</option>
+	      	<option value="cmyk">cmyk</option>
+	    </select><br>
+	    <label>Pixel grootte:</label>
+	    <input id="grootte" type="number" value="1"/><br>
+	    <label>Invert colors:</label>
+	    <select id="invert">
+	      	<option value="no">no</option>
+   	      	<option value="yes">yes</option>
+	    </select><br>
+	    <label>Gray colors:</label>
+	    <select id="gray">
+	      	<option value="no">no</option>
+   	      	<option value="yes">yes</option>
+	    </select><br>
+	    <p id="file_name">Name: </p>
+	    <p id="file_type">Type: </p>
+	    <p id="file_size">Size: </p>
+
+	</section>
+	
+	<section id="middle">
+		<canvas class="canvas"></canvas>
+	</section>
+
+	<aside id="sidebar">
+		<div class="show"></div>
+	</aside>
+	
+	<footer>
+		<div class="textarea">
+		  	<textarea></textarea>
+		</div>
+	</footer>
+
+</div>
+
+<script type="text/javascript">
+$(function(){ //Document ready function
+		$('#output').change(function(){				//bij verandering van id output
+			pictureobject.output = $(this).val();	//Zet de val van id output ine pictureobject.output
+			pictureobject.draw();					//Ga naar de draw method
+		});
+		$('#grootte').change(function(){			//bij verandering van id grootte
+			pictureobject.grootte = $(this).val();	//set propertie
+			pictureobject.draw();					//Ga naar de draw method
+		});
+		$('#invert').change(function(){				//bij verandering van id invert
+			pictureobject.invert = $(this).val();	//set propertie
+			pictureobject.draw();					//Ga naar de draw method
+		});
+		$('#gray').change(function(){				//bij verandering van id gray
+			pictureobject.gray = $(this).val();		//set propertie
+			pictureobject.draw();					//Ga naar de draw method
+		});
+
+		pictureobject =  {												//Aanmaken object
+		output: 'hex',													//Properie voor output
+		image: "",														//Base64 propertie
+		show: $('.show'),												//Select .show
+		draw: function(){
+			var img = new Image();									 	//nieuwe img
+	    	img.src = this.image;										//src van de image base64 (object propertie daarom this)
+	    	var canvas = $('.canvas')[0];								//selecteer het canvas element
+		    var context = canvas.getContext('2d');						
+		    context.clearRect(0, 0, canvas.width, canvas.height);		//maak canvas eerst leeg 
+		    context.drawImage(img, 0, 0);								//teken de img in het canvas op pixels 0x0
+
+	    	var boxshadow = [];											//array aanmaken voor shadow boxes weer te geven
+	    	for ( var B = 0; B < img.width; B++) {						//breedte van image afgaan
+	    		for ( var H = 0; H < img.height; H++) {					//hoogte van image afgaan
+	    			/*
+					The CanvasRenderingContext2D.getImageData() method of the Canvas 2D API returns an ImageData object representing the underlying pixel data for the area of the canvas denoted by the rectangle which starts at (sx, sy) and has an sw width and sh height.
+	    			*/
+	    			var data = context.getImageData(B, H, 1, 1).data; 	// 0 x 0 en 1px hoog en 1 px breed geeft array met rgb waarden
+	    																// een Uint8ClampedArray
+	    			if (this.invert == 'yes') {							//invert
+	    					data[0] = 255 - data[0];					//invert r
+	    					data[1] = 255 - data[1];					//invert g
+	    					data[2] = 255 - data[2];					//invert b
+	    					console.log('invert');								
+	    			}
+	    			if (this.gray == 'yes') {							//Gray
+	    					data[0] = data[0];
+	    					data[1] = data[0];
+	    					data[2] = data[0];
+	    					console.log('gray');								
+	    			}													
+		    		switch(this.output){								//kijk naar welke output er moet komen
+		    			case 'rgb': 									//rgb
+		    				boxshadow.push( B+'px '+H+'px rgb('+data[0]+','+data[1]+','+data[2]+')' ); //waarden in array pushen
+		    				console.log('rgb');
+		    				break;
+		    			case 'rgba':
+		    				boxshadow.push( B+'px '+H+'px rgba('+data[0]+','+data[1]+','+data[2]+','+this.opacity(data[3])+')' );
+		    				console.log('rgba');
+		    				break;
+		    			case 'hex':
+		    				// hex omzetten van rgb naar hex
+		    				boxshadow.push( B+'px '+H+'px #'+this.rgbtohex(data[0])+''+this.rgbtohex(data[1])+''+this.rgbtohex(data[2]) );
+		    				console.log('hex');
+		    				break;
+		    			case 'hsl':
+		    				// hsl, omzetten van rgb naar hsl
+		    				var hsl = this.hslconvesion(data);
+		    				boxshadow.push( B+'px '+H+'px hsl('+hsl[0]+','+hsl[1]+','+hsl[2]+')' );
+		    				console.log('hsl');
+		    				break;
+		    			case 'hsv':
+		    				// hsv, omzetten van rgb naar hsl
+		    				var hsv = this.hsvconvesion(data);
+		    				boxshadow.push( B+'px '+H+'px hsv('+hsv[0]+','+hsv[1]+','+hsv[2]+')' );
+		    				console.log('hsv');
+		    				break;
+		    			case 'cmyk':
+		    				//cmyk omzetten van rgb naar cmyk
+		    				var cmyk = this.hsvconvesion(data);
+		    				boxshadow.push( B+'px '+H+'px cmyk('+cmyk[0]+','+cmyk[1]+','+cmyk[2]+','+cmyk[3]+')' );
+		    				console.log('cmyk');
+		    				break;
+		    		}
+	    		}
+	    	}
+	    	this.show.css('box-shadow', boxshadow).css('width',this.grootte).css('height',this.grootte); 	//add css aan show element
+
+
+	    	//select textarea en zet de verschillende css elementen er in (Belangrijkste natuurlijk de box-shadow)
+	    	$('.textarea textarea').val('.show{\n\
+			display: inline-block;\n\
+			width: '+this.grootte+'px;\n\
+			height: '+this.grootte+'px;\n\
+			box-shadow: '+boxshadow+';\n\
+			}');
+		},
+		gray: 'no',			//gray propertie standaard eerst op neen
+		invert:'no',		//invert propertie standaard eerst op neen
+		grootte: "1",		//piwel grootte standaard op 1
+		rgbtohex: function(rgb){
+			var str = Number(rgb).toString(16);				//var h = Math.round(num).toString(16);
+    		return str.length == 1 ? "0" + str : str 		
+    	},
+    	opacity: function(data3){							//bereken opcairy voor tgba
+    		var opacity = data3/255;
+	    	opacity = Math.round(opacity*100)/100;
+			console.log(opacity);
+    		return opacity;
+    	},
+    	hslconvesion: function(rgbArr){						//rgb naar hsl conversie
+		    var r1 = rgbArr[0] / 255;
+		    var g1 = rgbArr[1] / 255;
+		    var b1 = rgbArr[2] / 255;
+		 
+		    var maxColor = Math.max(r1,g1,b1);
+		    var minColor = Math.min(r1,g1,b1);
+		    //Calculate L:
+		    var L = (maxColor + minColor) / 2 ;
+		    var S = 0;
+		    var H = 0;
+		    if(maxColor != minColor){
+		        //Calculate S:
+		        if(L < 0.5){
+		            S = (maxColor - minColor) / (maxColor + minColor);
+		        }else{
+		            S = (maxColor - minColor) / (2.0 - maxColor - minColor);
+		        }
+		        //Calculate H:
+		        if(r1 == maxColor){
+		            H = (g1-b1) / (maxColor - minColor);
+		        }else if(g1 == maxColor){
+		            H = 2.0 + (b1 - r1) / (maxColor - minColor);
+		        }else{
+		            H = 4.0 + (r1 - g1) / (maxColor - minColor);
+		        }
+		    }
+		 
+		    L = L * 100;
+		    S = S * 100;
+		    H = H * 60;
+		    if(H<0){
+		        H += 360;
+		    }
+		    var result = [H, S, L];
+		    return result;
+		},
+		hsvconvesion: function(rgbArr){
+			var r = rgbArr[0] / 255;
+		    var g = rgbArr[1] / 255;
+		    var b = rgbArr[2] / 255;
+		    
+		    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+		    var h, s, v = max;
+
+		    var d = max - min;
+		    s = max == 0 ? 0 : d / max;
+
+		    if(max == min){
+		        h = 0; // achromatic
+		    }else{
+		        switch(max){
+		            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+		            case g: h = (b - r) / d + 2; break;
+		            case b: h = (r - g) / d + 4; break;
+		        }
+		        h /= 6;
+		    }
+
+		    var result = [h, s, v];
+		    return result;
+		},
+
+		cmykconvesion: function(rgbArr){
+	        var C = 0;
+			var M = 0;
+			var Y = 0;
+			var K = 0;
+
+			var r = rgbArr[0] / 255;
+		    var g = rgbArr[1] / 255;
+		    var b = rgbArr[2] / 255; 
+
+			if ( r==null || g==null || b==null ||
+			    isNaN(r) || isNaN(g)|| isNaN(b) )
+			{
+			  console.log('Please enter numeric RGB values!');
+			  return;
+			}
+			if (r<0 || g<0 || b<0 || r>255 || g>255 || b>255) {
+			  console.log('RGB values must be in the range 0 to 255.');
+			  return;
+			}
+
+			// BLACK
+			if (r==0 && g==0 && b==0) {
+			 K = 1;
+			 return [0,0,0,1];
+			}
+
+			C = 1 - (r/255);
+			M = 1 - (g/255);
+			Y = 1 - (b/255);
+
+			var minCMY = Math.min(C,
+			             Math.min(M,Y));
+			C = (C - minCMY) / (1 - minCMY) ;
+			M = (M - minCMY) / (1 - minCMY) ;
+			Y = (Y - minCMY) / (1 - minCMY) ;
+			K = minCMY;
+
+			var result = [C,M,Y,K];
+		    return result;
+		}
+	};
+	
+	// 
+	$('#fileinput').change(function(evt) {				//drukken upload button
+		var f = evt.target.files[0];					//File list van alle geslecteerde files	+ Pak de eerste file
+		var r = new FileReader();						//filereader wordt gebruikt om blobs of files te lezen
+
+		r.onload = (function(theFile) {					//Wanneer de file is geladen 
+			return function(e) {
+				$("#file_name").text("Name: " + f.name);		//pak naam van de file
+				$("#file_type").text("Type: " + f.type);		//type of file
+				$("#file_size").text("Size: " + f.size + "Bytes");	//en de grootte
+	        	pictureobject.image = e.target.result;		//Omzetten naar base64 en in object plaatsten
+				console.log(pictureobject.image);			//plaatsen van info in console
+				pictureobject.draw();  						//Draw method uitvoeren van Object
+			};
+		})(f);
+	    r.readAsDataURL(f);
+	});
+
+});
+
+</script>
+</body>
+</html>
