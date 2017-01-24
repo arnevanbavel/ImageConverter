@@ -37,8 +37,8 @@
 	      	<option value="hex">hex</option>
 	      	<option value="rgba">rgba</option>
 	      	<option value="hsl">hsl</option>
-	      	<option value="hsv">hsv</option>
-	      	<option value="cmyk">cmyk</option>
+	      	<option value="hsv">hsv (css not supported)</option>
+	      	<option value="cmyk">cmyk (not working yet)</option>
 	    </select><br>
 	    <label>Pixel grootte:</label>
 	    <input id="grootte" type="number" value="1"/><br>
@@ -67,6 +67,12 @@
 	</aside>
 	
 	<footer>
+		<a href="javascript:"
+		   download="filename.txt"
+		   target="output">
+		  Export css
+		</a>
+		<br>
 		<div class="textarea">
 		  	<textarea></textarea>
 		</div>
@@ -92,6 +98,18 @@ $(function(){ //Document ready function
 			pictureobject.gray = $(this).val();		//set propertie
 			pictureobject.draw();					//Ga naar de draw method
 		});
+
+		$('a').click(function(){					//Klikken op download
+	    	var text = $('textarea').val()			//textarea in blob
+	    	var blob = new Blob(
+	      	[text], {
+	        	type: "text/csv",'content-disposition':'attachment'
+			})
+	    	var url = 'data:text/csv,' + 
+	        encodeURIComponent(text)
+	    	//var url  = window.URL.createObjectURL(blob)
+	    	$('a').attr('href', url)				//download text file
+	  })
 
 		setTimeout(function(){pictureobject.draw()}, 200);
 
@@ -145,19 +163,19 @@ $(function(){ //Document ready function
 		    			case 'hsl':
 		    				// hsl, omzetten van rgb naar hsl
 		    				var hsl = this.hslconvesion(data);
-		    				boxshadow.push( B+'px '+H+'px hsl('+hsl[0]+','+hsl[1]+','+hsl[2]+')' );
+		    				boxshadow.push( B+'px '+H+'px hsl('+hsl[0]+','+hsl[1]+'%,'+hsl[2]+'%)' );
 		    				console.log('hsl');
 		    				break;
 		    			case 'hsv':
 		    				// hsv, omzetten van rgb naar hsl
 		    				var hsv = this.hsvconvesion(data);
-		    				boxshadow.push( B+'px '+H+'px hsv('+hsv[0]+','+hsv[1]+','+hsv[2]+')' );
+		    				boxshadow.push( B+'px '+H+'px hsv('+hsv[0]+','+hsv[1]+'%,'+hsv[2]+'%)' );
 		    				console.log('hsv');
 		    				break;
 		    			case 'cmyk':
 		    				//cmyk omzetten van rgb naar cmyk
 		    				var cmyk = this.hsvconvesion(data);
-		    				boxshadow.push( B+'px '+H+'px cmyk('+cmyk[0]+','+cmyk[1]+','+cmyk[2]+','+cmyk[3]+')' );
+		    				boxshadow.push( B+'px '+H+'px cmyk('+cmyk[0]+'%,'+cmyk[1]+'%,'+cmyk[2]+'%,'+cmyk[3]+'%)' );
 		    				console.log('cmyk');
 		    				break;
 		    		}
@@ -281,8 +299,7 @@ $(function(){ //Document ready function
 			M = 1 - (g/255);
 			Y = 1 - (b/255);
 
-			var minCMY = Math.min(C,
-			             Math.min(M,Y));
+			var minCMY = Math.min(C, Math.min(M,Y));
 			C = (C - minCMY) / (1 - minCMY) ;
 			M = (M - minCMY) / (1 - minCMY) ;
 			Y = (Y - minCMY) / (1 - minCMY) ;
